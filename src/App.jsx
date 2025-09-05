@@ -1,5 +1,5 @@
 import "./App.css";
-import React, { useMemo, useRef, useState } from "react";
+import React, { useMemo, useRef, useState, useDeferredValue } from "react";
 import { products } from "./data.js";
 import { useRenderCount } from "./hooks/useRenderCount.js";
 
@@ -30,9 +30,11 @@ function App() {
   const [theme, setTheme] = useState("light");
   const [minPrice, setMinPrice] = useState(0);
   const [searchInput, setSearchInput] = useState("");
-  const [query, setQuery] = useState("");
+  const [query, setQuery] = useState(""); // debounced search term
 
   const debounceTimer = useRef(null);
+
+  const deferredQuery = useDeferredValue(query);
 
   // logs render counts
   useRenderCount(`App ${minPrice}`);
@@ -45,7 +47,7 @@ function App() {
         p.price >= minPrice &&
         p.name.toLowerCase().includes(query.toLowerCase())
     );
-  }, [minPrice, query]);
+  }, [minPrice, deferredQuery]);
 
   const handleSearchChange = (e) => {
     const value = e.target.value;
