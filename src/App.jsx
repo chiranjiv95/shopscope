@@ -1,9 +1,14 @@
 import "./App.css";
+import { useState } from "react";
 import { products } from "./data.js";
 import { useRenderCount } from "./hooks/useRenderCount.js";
 
-const ProductCard = ({ product }) => {
+const ProductCard = ({ product, theme }) => {
   useRenderCount(`ProductCard ${product.id}`);
+
+  const bg = theme === "dark" ? "#333" : "#fff";
+  const color = theme === "dark" ? "#fff" : "#000";
+
   return (
     <div
       style={{
@@ -11,6 +16,8 @@ const ProductCard = ({ product }) => {
         padding: "8px",
         margin: "4px",
         width: "180px",
+        background: bg,
+        color,
       }}
     >
       <img src={product.image} alt={product.name} width="160" height="160" />
@@ -22,11 +29,17 @@ const ProductCard = ({ product }) => {
 };
 
 function App() {
+  const [theme, setTheme] = useState("light");
   return (
-    <div style={{ display: "flex", flexWrap: "wrap" }}>
-      {products.map((product) => (
-        <ProductCard key={product.id} product={product} />
-      ))}
+    <div>
+      <button onClick={() => setTheme(theme === "light" ? "dark" : "light")}>
+        Toggle Theme
+      </button>
+      <div style={{ display: "flex", flexWrap: "wrap" }}>
+        {products.map((product) => (
+          <ProductCard key={product.id} product={product} theme={theme} />
+        ))}
+      </div>
     </div>
   );
 }
