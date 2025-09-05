@@ -1,7 +1,9 @@
 import "./App.css";
 import { products } from "./data.js";
+import { useRenderCount } from "./hooks/useRenderCount.js";
 
 const ProductCard = ({ product }) => {
+  useRenderCount(`ProductCard ${product.id}`);
   return (
     <div
       style={{
