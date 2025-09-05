@@ -2,6 +2,7 @@ import "./App.css";
 import React, { useMemo, useRef, useState, useDeferredValue } from "react";
 import { products } from "./data.js";
 import { useRenderCount } from "./hooks/useRenderCount.js";
+import { useDebouncedValue } from "./hooks/useDebouncedValue.js";
 
 const ProductCardComponent = ({ product }) => {
   // logs render counts
@@ -30,10 +31,12 @@ function App() {
   const [theme, setTheme] = useState("light");
   const [minPrice, setMinPrice] = useState(0);
   const [searchInput, setSearchInput] = useState("");
-  const [query, setQuery] = useState(""); // debounced search term
+  // Manual debouncing
+  // const [query, setQuery] = useState(""); // debounced search term
+  // const debounceTimer = useRef(null);
 
-  const debounceTimer = useRef(null);
-
+  // Use hook: automatically debounces searchInput
+  const query = useDebouncedValue(searchInput, 500);
   const deferredQuery = useDeferredValue(query);
 
   // logs render counts
@@ -41,23 +44,23 @@ function App() {
 
   // 🔹 useMemo prevents recalculation on unrelated renders (like theme toggle)
   const filteredProducts = useMemo(() => {
-    console.log("Filtering products for minPrice:", minPrice, query); // demo log
+    console.log("Filtering products for minPrice:", minPrice, deferredQuery);
     return products.filter(
       (p) =>
         p.price >= minPrice &&
-        p.name.toLowerCase().includes(query.toLowerCase())
+        p.name.toLowerCase().includes(deferredQuery.toLowerCase())
     );
   }, [minPrice, deferredQuery]);
 
   const handleSearchChange = (e) => {
     const value = e.target.value;
     setSearchInput(value);
-    clearTimeout(debounceTimer.current); // clear previous timer
 
-    // set new timer (500ms delay)
-    debounceTimer.current = setTimeout(() => {
-      setQuery(value);
-    }, 500);
+    // Manual debouncing
+    // clearTimeout(debounceTimer.current); // clear previous timer
+    // debounceTimer.current = setTimeout(() => {
+    //   setQuery(value);
+    // }, 500);
   };
 
   return (
