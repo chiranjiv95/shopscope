@@ -1,5 +1,5 @@
 import "./App.css";
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import { products } from "./data.js";
 import { useRenderCount } from "./hooks/useRenderCount.js";
 
@@ -28,6 +28,23 @@ const ProductCard = React.memo(ProductCardComponent);
 
 function App() {
   const [theme, setTheme] = useState("light");
+  const [minPrice, setMinPrice] = useState(0);
+
+  // logs render counts
+  useRenderCount(`App ${minPrice}`);
+
+  // 🔹 derived data calculated on every render (unoptimized)
+  // const filteredProducts = products.filter((p) => {
+  //   console.log("inside filtering...");
+  //   return p.price >= minPrice;
+  // });
+
+  // 🔹 useMemo prevents recalculation on unrelated renders (like theme toggle)
+  const filteredProducts = useMemo(() => {
+    console.log("Filtering products for minPrice:", minPrice); // demo log
+    return products.filter((p) => p.price >= minPrice);
+  }, [minPrice]);
+
   return (
     // theme applied to wrapper via class (CSS variables used inside .product-card)
     <div className={theme === "dark" ? "app-theme--dark" : "app-theme--light"}>
@@ -36,8 +53,15 @@ function App() {
       >
         Toggle Theme
       </button>
+
+      <input
+        type="number"
+        value={minPrice}
+        onChange={(e) => setMinPrice(e.target.value)}
+        placeholder="Minimum Price"
+      />
       <div className="product-grid">
-        {products.map((product) => (
+        {filteredProducts.map((product) => (
           <ProductCard key={product.id} product={product} />
         ))}
       </div>
