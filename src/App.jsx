@@ -1,5 +1,5 @@
 import "./App.css";
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useRef, useState } from "react";
 import { products } from "./data.js";
 import { useRenderCount } from "./hooks/useRenderCount.js";
 
@@ -29,21 +29,34 @@ const ProductCard = React.memo(ProductCardComponent);
 function App() {
   const [theme, setTheme] = useState("light");
   const [minPrice, setMinPrice] = useState(0);
+  const [searchInput, setSearchInput] = useState("");
+  const [query, setQuery] = useState("");
+
+  const debounceTimer = useRef(null);
 
   // logs render counts
   useRenderCount(`App ${minPrice}`);
 
-  // 🔹 derived data calculated on every render (unoptimized)
-  // const filteredProducts = products.filter((p) => {
-  //   console.log("inside filtering...");
-  //   return p.price >= minPrice;
-  // });
-
   // 🔹 useMemo prevents recalculation on unrelated renders (like theme toggle)
   const filteredProducts = useMemo(() => {
-    console.log("Filtering products for minPrice:", minPrice); // demo log
-    return products.filter((p) => p.price >= minPrice);
-  }, [minPrice]);
+    console.log("Filtering products for minPrice:", minPrice, query); // demo log
+    return products.filter(
+      (p) =>
+        p.price >= minPrice &&
+        p.name.toLowerCase().includes(query.toLowerCase())
+    );
+  }, [minPrice, query]);
+
+  const handleSearchChange = (e) => {
+    const value = e.target.value;
+    setSearchInput(value);
+    clearTimeout(debounceTimer.current); // clear previous timer
+
+    // set new timer (500ms delay)
+    debounceTimer.current = setTimeout(() => {
+      setQuery(value);
+    }, 500);
+  };
 
   return (
     // theme applied to wrapper via class (CSS variables used inside .product-card)
@@ -55,11 +68,19 @@ function App() {
       </button>
 
       <input
+        type="text"
+        value={searchInput}
+        onChange={handleSearchChange}
+        placeholder="Search by name..."
+      />
+
+      <input
         type="number"
         value={minPrice}
         onChange={(e) => setMinPrice(e.target.value)}
         placeholder="Minimum Price"
       />
+
       <div className="product-grid">
         {filteredProducts.map((product) => (
           <ProductCard key={product.id} product={product} />
