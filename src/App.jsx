@@ -3,7 +3,7 @@ import { useState } from "react";
 import { products } from "./data.js";
 import { useRenderCount } from "./hooks/useRenderCount.js";
 
-const ProductCard = ({ product, theme }) => {
+const ProductCard = ({ product, theme, onClick }) => {
   useRenderCount(`ProductCard ${product.id}`);
 
   const bg = theme === "dark" ? "#333" : "#fff";
@@ -19,6 +19,7 @@ const ProductCard = ({ product, theme }) => {
         background: bg,
         color,
       }}
+      onClick={onClick}
     >
       <img src={product.image} alt={product.name} width="160" height="160" />
       <h4>{product.name}</h4>
@@ -37,7 +38,12 @@ function App() {
       </button>
       <div style={{ display: "flex", flexWrap: "wrap" }}>
         {products.map((product) => (
-          <ProductCard key={product.id} product={product} theme={theme} />
+          <ProductCard
+            key={product.id}
+            product={product}
+            theme={theme}
+            onClick={() => alert(`Clicked ${product.name}`)} // 👈 inline function every render
+          />
         ))}
       </div>
     </div>
