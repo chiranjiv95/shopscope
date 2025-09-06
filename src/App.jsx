@@ -3,6 +3,7 @@ import React, { useMemo, useRef, useState, useDeferredValue } from "react";
 import { products } from "./data.js";
 import { useRenderCount } from "./hooks/useRenderCount.js";
 import { useDebouncedValue } from "./hooks/useDebouncedValue.js";
+import { VirtuosoGrid } from "react-virtuoso";
 
 const ProductCardComponent = ({ product }) => {
   // logs render counts
@@ -86,11 +87,20 @@ function App() {
         placeholder="Minimum Price"
       />
 
-      <div className="product-grid">
+      {/* <div className="product-grid">
         {filteredProducts.map((product) => (
           <ProductCard key={product.id} product={product} />
         ))}
-      </div>
+      </div> */}
+
+      <VirtuosoGrid
+        style={{ height: "600px", width: "100%" }}
+        totalCount={filteredProducts.length}
+        itemContent={(index) => {
+          const product = filteredProducts[index];
+          return <ProductCard key={product.id} product={product} />;
+        }}
+      />
     </div>
   );
 }
