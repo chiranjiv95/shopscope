@@ -1,10 +1,37 @@
 import "./App.css";
-import React, { useMemo, useRef, useState, useDeferredValue } from "react";
+import React, { useMemo, useState, useDeferredValue, forwardRef } from "react";
 import { products } from "./data.js";
 import { useRenderCount } from "./hooks/useRenderCount.js";
 import { useDebouncedValue } from "./hooks/useDebouncedValue.js";
 import { VirtuosoGrid } from "react-virtuoso";
 
+const gridComponents = {
+  List: forwardRef(({ style, children, ...props }, ref) => (
+    <div
+      ref={ref}
+      {...props}
+      style={{
+        display: "flex",
+        flexWrap: "wrap",
+        ...style,
+      }}
+    >
+      {children}
+    </div>
+  )),
+  Item: ({ children, ...props }) => (
+    <div
+      {...props}
+      style={{
+        padding: "0.5rem",
+        width: "20%", // dynamically control based on your design
+        boxSizing: "border-box",
+      }}
+    >
+      {children}
+    </div>
+  ),
+};
 const ProductCardComponent = ({ product }) => {
   // logs render counts
   useRenderCount(`ProductCard ${product.id}`);
@@ -17,7 +44,13 @@ const ProductCardComponent = ({ product }) => {
 
   return (
     <div className="product-card" onClick={handleClick}>
-      <img src={product.image} alt={product.name} width="160" height="160" />
+      <img
+        src={product.image}
+        alt={product.name}
+        width="160"
+        height="160"
+        loading="lazy"
+      />
       <h4>{product.name}</h4>
       <p>₹ {product.price}</p>
       <p>{product.description}</p>
@@ -32,9 +65,6 @@ function App() {
   const [theme, setTheme] = useState("light");
   const [minPrice, setMinPrice] = useState(0);
   const [searchInput, setSearchInput] = useState("");
-  // Manual debouncing
-  // const [query, setQuery] = useState(""); // debounced search term
-  // const debounceTimer = useRef(null);
 
   // Use hook: automatically debounces searchInput
   const query = useDebouncedValue(searchInput, 500);
@@ -56,12 +86,6 @@ function App() {
   const handleSearchChange = (e) => {
     const value = e.target.value;
     setSearchInput(value);
-
-    // Manual debouncing
-    // clearTimeout(debounceTimer.current); // clear previous timer
-    // debounceTimer.current = setTimeout(() => {
-    //   setQuery(value);
-    // }, 500);
   };
 
   return (
@@ -87,20 +111,17 @@ function App() {
         placeholder="Minimum Price"
       />
 
-      {/* <div className="product-grid">
-        {filteredProducts.map((product) => (
-          <ProductCard key={product.id} product={product} />
-        ))}
-      </div> */}
-
-      <VirtuosoGrid
-        style={{ height: "600px", width: "100%" }}
-        totalCount={filteredProducts.length}
-        itemContent={(index) => {
-          const product = filteredProducts[index];
-          return <ProductCard key={product.id} product={product} />;
-        }}
-      />
+      <div style={{ height: "600px" }}>
+        <VirtuosoGrid
+          style={{ height: "100%" }}
+          totalCount={filteredProducts.length}
+          components={gridComponents}
+          itemContent={(index) => {
+            const product = filteredProducts[index];
+            return <ProductCard key={product.id} product={product} />;
+          }}
+        />
+      </div>
     </div>
   );
 }
