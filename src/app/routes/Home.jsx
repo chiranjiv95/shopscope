@@ -1,8 +1,8 @@
-import "./App.css";
 import React, { useMemo, useState, useDeferredValue, forwardRef } from "react";
-import { products } from "./data.js";
-import { useRenderCount } from "./hooks/useRenderCount.js";
-import { useDebouncedValue } from "./hooks/useDebouncedValue.js";
+import { products } from "../../data.js";
+import { useRenderCount } from "../../hooks/useRenderCount.js";
+import { useDebouncedValue } from "../../hooks/useDebouncedValue.js";
+import { ProductCard } from "../../components/ProductCard/ProductCard.jsx";
 import { VirtuosoGrid } from "react-virtuoso";
 
 const gridComponents = {
@@ -32,36 +32,8 @@ const gridComponents = {
     </div>
   ),
 };
-const ProductCardComponent = ({ product }) => {
-  // logs render counts
-  useRenderCount(`ProductCard ${product.id}`);
 
-  // handler lives inside the card — it won't break memoization because
-  // the card itself won't re-render unless its props change.
-  const handleClick = () => {
-    alert(`Clicked ${product.name}`);
-  };
-
-  return (
-    <div className="product-card" onClick={handleClick}>
-      <img
-        src={product.image}
-        alt={product.name}
-        width="160"
-        height="160"
-        loading="lazy"
-      />
-      <h4>{product.name}</h4>
-      <p>₹ {product.price}</p>
-      <p>{product.description}</p>
-    </div>
-  );
-};
-
-// memoize the card so it only re-renders when `product` changes
-const ProductCard = React.memo(ProductCardComponent);
-
-function App() {
+function Home() {
   const [theme, setTheme] = useState("light");
   const [minPrice, setMinPrice] = useState(0);
   const [searchInput, setSearchInput] = useState("");
@@ -71,7 +43,7 @@ function App() {
   const deferredQuery = useDeferredValue(query);
 
   // logs render counts
-  useRenderCount(`App ${minPrice}`);
+  useRenderCount(`Home ${minPrice}`);
 
   // 🔹 useMemo prevents recalculation on unrelated renders (like theme toggle)
   const filteredProducts = useMemo(() => {
@@ -126,4 +98,4 @@ function App() {
   );
 }
 
-export default App;
+export default Home;

@@ -4,5 +4,6 @@ export const products = Array.from({ length: 10000 }, (_, i) => ({
   price: Math.floor(Math.random() * 1000),
   description:
     "This is a demo description that is deliberately long to simulate heavy DOM.",
-  image: `https://picsum.photos/seed/${i}/200/200`,
+  // image: `https://picsum.photos/seed/${i}/200/200`,
+  image: `https://placehold.co/200x200?text=Product${i + 1}`,
 }));
