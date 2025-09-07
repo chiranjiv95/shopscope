@@ -7,3 +7,9 @@ export const products = Array.from({ length: 10000 }, (_, i) => ({
   // image: `https://picsum.photos/seed/${i}/200/200`,
   image: `https://placehold.co/200x200?text=Product${i + 1}`,
 }));
+
+export const faqs = Array.from({ length: 7 }, (_, i) => ({
+  id: i + 1,
+  question: `Question ${i + 1}`,
+  answer: `Answer ${i + 1}`,
+}));

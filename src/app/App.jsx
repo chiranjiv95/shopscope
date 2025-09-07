@@ -6,6 +6,7 @@ import QueryDemo from "../features/query-demo/QueryDemo";
 const Home = lazy(() => import("./routes/Home"));
 const Cart = lazy(() => import("./routes/Cart"));
 const ProductDetails = lazy(() => import("./routes/ProductDetails"));
+import { Support } from "./routes/Support";
 
 const App = () => {
   return (
@@ -17,6 +18,8 @@ const App = () => {
           <Route path="/product/:id" element={<ProductDetails />} />
           <Route path="/direct-fetch" element={<DirectFetchDemo />} />
           <Route path="/query-fetch" element={<QueryDemo />} />
+          <Route path="/support" element={<Support />} />
+          <Route path="*" element={<div>Page Not Found</div>} />
         </Routes>
       </Suspense>
     </Router>
